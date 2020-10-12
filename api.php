@@ -7,22 +7,18 @@ header('Content-Type: text/html; charset=utf-8');
 header('Content-Type: application/json');
 
 include_once("config.php");
-
+include_once("functions.php");
+$db = connectDB();
 $res = array();
+$limit = array(0,10);
 
-$db = new mysqli($HOST, $USERNAME, $PASSWORD, $DATABASE);
-if($db->connect_errno > 0){ 
-   
-    $res['response'] = "There was an error connecting to the database";
-    $res= json_encode($res);
-    echo $res;
-    exit;
-}
-
-// GET JSON
 $json = file_get_contents('php://input');
 $data = json_decode($json);
+if(!isset($data)) { $data = ""; }
 
+
+if(isset($APIKEY)) {
+    $res['info']['api_required'] = true;
 if(property_exists($data, "apikey")) { 
     if($data->apikey != $APIKEY) {
         $res['error'] = "You need a valid API key to access this data";
@@ -37,19 +33,42 @@ else {
     echo $res;
     exit;
 }
-
+}
+if(!isset($APIKEY)) { 
+    $res['info']['api_required'] = false;
+}
 
 $url = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 $uriParts = parse_url($url);
 $path = $uriParts['path'];
 
 list($q, $qpath) = explode("api.php", $path);
-$table = str_replace("/records/", "", $qpath);
+$table = str_replace("/", "", $qpath);
+
 
 
 
 if(property_exists($data, "limit")) { 
     $limit = $data->limit;
+    $res['info']['query_params']['limit'] = $limit;
+}
+// remove limit if nolimit set
+if(property_exists($data, "nolimit")) { 
+    if($data->nolimit) { 
+        unset($limit);
+        $res['info']['query_params']['nolimit'] = true;
+    }
+    else { 
+        $res['info']['query_params']['nolimit'] = false;
+    }
+    
+}
+
+
+if(property_exists($data, "nolimit")) { 
+    if($data->nolimit) { 
+        unset($limit);
+    }
 }
 
 if(property_exists($data, 'columns')) { 
@@ -64,9 +83,8 @@ if(property_exists($data, 'filters')) {
     $filters = $data->filters;
 }
 
-// get headers
-if(property_exists($data, "schema")) { 
-    $headers = array();
+// get db stats /////////// ADD CONDITION
+$headers = array();
     $query = "SELECT `COLUMN_NAME` FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE `TABLE_NAME`='$table'";
     $query = $db->query($query);
     while($row = $query->fetch_assoc()) { 
@@ -74,9 +92,7 @@ if(property_exists($data, "schema")) {
             array_push($headers, $r);
             }       
         }
-        $res['schema'] = $headers;
-   
-}
+
 
 if(property_exists($data, "id")) { 
     $id = $data->id;
@@ -118,19 +134,20 @@ if(isset($filters)) {
     
     // var_dump($filters);
     $filter = "";
-    $matching = "LIKE";
+    $matching = "";
     $value = "";
     $count = count($filters);
     
     $iterate = 1;
     foreach($filters as $f) { 
      
-        if($f->type == "contains") { 
-            $matching = "LIKE";
-            $value = "%" . $f->value . "%";
-        }
+        // if($f->type == "contains") { 
+        //     $matching = "LIKE";
+        //     $value = "%" . $f->value . "%";
+        // }
+        $search = matchingType($f->type, $f->value);
 
-       $filter .= " $f->name $matching '$value' ";
+       $filter .= " $f->name $search ";
         if($count > 1 && $iterate < $count) { 
             $filter .= " AND  ";
         }
@@ -151,10 +168,19 @@ if(isset($order)) {
     $sql .= " ORDER BY $order[0] $order[1]";
 }
 
+
+
 ////////// LIMIT
 if(isset($limit)) { 
     $sql .= " LIMIT $limit[0], $limit[1]";
 }
+
+
+
+// echo $sql;
+
+// get row counts
+
 
 // query table
 $query = $sql;
@@ -166,17 +192,57 @@ while($row = $query->fetch_assoc()) {
     $res['data'][] = $row;
 }
 
-if(property_exists($data, "query")) { 
-    if($data->query) { 
-    $res['query'] = $sql;
+// if(property_exists($data, "query")) { 
+//     if($data->query) { 
+    
+//     }
+// }
+
+if(property_exists($data, "info")) { 
+    if($data->info) { 
+    // get table data
+    $colcount = count($headers);
+    $firstcol = $headers[0];
+    $query = "SELECT '$firstcol' from $table";
+    $query = $db->query($query);
+    $rowcount = $query->num_rows;
+    
+    $res['info']['target']['columns'] = $colcount;
+    $res['info']['target']['rows'] = $rowcount;
+
+    // get schema
+    $headers = array();
+    $query = "SELECT `COLUMN_NAME` FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE `TABLE_NAME`='$table'";
+    $query = $db->query($query);
+    while($row = $query->fetch_assoc()) { 
+            foreach($row as $r) { 
+            array_push($headers, $r);
+            }       
+        }
+        $res['info']['target']['schema'] = $headers;
+
+    // get tables 
+    $tables = array();
+    $query = "SHOW tables";
+    $query = $db->query($query);
+    while($row = $query->fetch_assoc()) { 
+            foreach($row as $r) { 
+            array_push($tables, $r);
+            }       
+        }
+        $res['info']['db_tables'] = $tables;
+        
+    // show table
+    $res['info']['target']['table'] = $table;
+
+    // show query 
+    $res['info']['query'] = $sql;
+
     }
+
 }
+
 $res = json_encode($res);
 echo $res;
 
 ?>
-
-
-
-
-

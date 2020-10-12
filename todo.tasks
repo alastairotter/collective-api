@@ -1,0 +1,36 @@
+cmd-enter = new task
+alt-d = task done
+alt-c = task cancelled
+alt-s = task started (alt-s when task ended)
+cmd-shift-enter = archive tasks
+
+tags @critical @high @low @today
+
+Collective API:
+    Tasks:
+        ☐ Check for column type when querying table and only add htmlspecialcharacters when it equals text/varchar @high
+        ☐ Add option to include list of query parameters in JSON response (in info)
+        ☐ Catch SQL query errors and report them in the API @high
+        ☐ If there is no data to return set a message to that effect
+        ☐ Add standard "message" response to send 200 or error messages
+        ☐ Add pagination
+        ☐ Return "start" and "end" in JSON response (ie. pagination)
+
+    Ideas:
+        ☐ Add sum functions
+        ☐ Add group functions 
+        ☐ Include parameter in JSON POST to override URL based table selection (ie. table can be specified either by JSON parameter or by URL)
+        ☐ Include Config option to limit tables viewable (ie list of available tables)
+        ☐ Include config option to limit table to only current/give one
+        
+Archive:
+  ✔ Add option to include table stats JSON reponse @done(20-10-11 18:40) @project(Collective API.Tasks)
+  ✔ Include record count ins JSON response @done(20-10-11 18:40) @project(Collective API.Tasks)
+  ✔ Add "info" parameter that returns all informational data. Toggle: true/false Maybe outsource it to a function @done(20-10-11 18:40) @project(Collective API.Tasks)
+  ✘ Group all "informational" data into one parameter (eg "info") Keep query, tables, table as single parameters but allow "info" to override. ie if "info" is true then show all of the "informational" responses. If "info" is false then ignore "query", "tables", "table" etc Sort of "debug option. @cancelled(20-10-11 18:22) @project(Collective API.Tasks)
+  ✔ Include table name in JSON response @done(20-10-11 17:44) @project(Collective API.Tasks)
+  ✔ Add manual override to retrieve all records. @high @done(20-10-11 17:19) @project(Collective API.Tasks)
+  ✔ Add automatic limit on number entries returned @high @done(20-10-11 17:10) @project(Collective API.Tasks)
+  ✔ Add todo list @done(20-10-11 16:30) @today @project(Collective API.Tasks)
+  ✘ Idea tab @cancelled(20-10-11 16:37) @project(Collective API.Tasks)
+  ✘ Do something @cancelled(20-10-11 16:41) @project(Collective API.Tasks)
