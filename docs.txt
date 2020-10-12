@@ -1,0 +1,25 @@
+Collective API Documentation
+----------------------------
+
+A simple API for accessing MySQL databases. 
+
+FEATURES
+--------
+
+- Support for API keys to control access
+
+
+PARAMETERS
+----------
+
+The following are valid parameters: 
+
+- "apikey" (string) - Required to access API [required]
+- "schema" (true, false) - Includes list of columns headers in DB [optional]
+- "query" (true, false) - Includes SQL query in response for debugging [optional]
+- "id" (int) - Returns selected row [optional]
+- "columns" (array) - Returns selected columns [optional, defaults to *]
+- "limit" (array[start,end]) - Returns rows matching these limits [optional]
+- "order" (array[column, direction]) - Returns sorted response based on column and direction [optional]
+    example: "order": ["name","DESC"]
+- "filters" (array{object}) Single filters for now return filtered data [optional]
