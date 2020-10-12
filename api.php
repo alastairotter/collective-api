@@ -16,9 +16,7 @@ $json = file_get_contents('php://input');
 $data = json_decode($json);
 if(!isset($data)) { $data = ""; }
 
-
 if(isset($APIKEY)) {
-    $res['info']['api_required'] = true;
 if(property_exists($data, "apikey")) { 
     if($data->apikey != $APIKEY) {
         $res['error'] = "You need a valid API key to access this data";
@@ -34,9 +32,9 @@ else {
     exit;
 }
 }
-if(!isset($APIKEY)) { 
-    $res['info']['api_required'] = false;
-}
+// if(!isset($APIKEY)) { 
+    
+// }
 
 $url = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 $uriParts = parse_url($url);
@@ -156,10 +154,6 @@ if(isset($filters)) {
         }
 
        $sql .= " WHERE " . $filter . " ";
-    //    if($count > 1 && $count )
-
-   
-
          
 }
 
@@ -168,19 +162,10 @@ if(isset($order)) {
     $sql .= " ORDER BY $order[0] $order[1]";
 }
 
-
-
 ////////// LIMIT
 if(isset($limit)) { 
     $sql .= " LIMIT $limit[0], $limit[1]";
 }
-
-
-
-// echo $sql;
-
-// get row counts
-
 
 // query table
 $query = $sql;
@@ -192,14 +177,13 @@ while($row = $query->fetch_assoc()) {
     $res['data'][] = $row;
 }
 
-// if(property_exists($data, "query")) { 
-//     if($data->query) { 
-    
-//     }
-// }
-
 if(property_exists($data, "info")) { 
+
+    
     if($data->info) { 
+        if(isset($APIKEY)) $res['info']['api_required'] = true;  
+        else $res['info']['api_required'] = false;  
+        
     // get table data
     $colcount = count($headers);
     $firstcol = $headers[0];

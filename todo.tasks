@@ -15,6 +15,7 @@ Collective API:
         ☐ Add standard "message" response to send 200 or error messages
         ☐ Add pagination
         ☐ Return "start" and "end" in JSON response (ie. pagination)
+        ☐ Add option to specify "id" column label if it is not called "id"
 
     Ideas:
         ☐ Add sum functions
