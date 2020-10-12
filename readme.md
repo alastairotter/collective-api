@@ -1,4 +1,4 @@
-# Collective API Documentation #
+# Collective API #
 
 A simple API for reading MySQL databases. 
 
@@ -20,7 +20,7 @@ fetch('http://localhost:8888/collective-api/api.php/mydbtable', {
     console.log(data)
 });
 ```
-3. By default the API returns 10 records at a time. You can override this by specifiying a limit in the form [0,10]. Alternatively you can set the "nolimit" parameter to "true" true to return all records. **NOTE** if you have a large database this may cause an error. 
+3. By default the API returns 10 records at a time. You can override this by specifiying a limit in the form [0,10]. Alternatively you can set the "nolimit" parameter to "true" to return all records. **NOTE** if you have a large database this may cause an error. 
 
 ## Limitations ##
 - Collective API does not write to the database.
@@ -39,8 +39,8 @@ The following are valid parameters:
 - "columns" (array) - Returns selected columns [optional, defaults to *]
 - "limit" (array[start,end]) - Returns rows matching these limits [optional]
 - "nolimit": (true, false) - Overrides automatic limit on the number of records returned. Large databases may return an error if this is set to true. Use the "limit" filter to reduce the number of results returned. 
-- "order" (array[column, direction (*ASC or DESC*)]) - Returns sorted response based on column and direction [optional]
-- "filters" (array{object}) - Multiple filters for each request (see **"Filters"** below) [optional]
+- "order" (array[column, order (*ASC or DESC*)]) - Returns sorted response based on column and order [optional]
+- "filters" (array{objects}) - Multiple filters for each request (see **"Filters"** below) [optional]
 
 An example JSON query would look like: 
 ```
@@ -67,7 +67,6 @@ An example JSON query would look like:
 }
 ```
 
-
 ## Filters ##
 
 The "filters" parameter can take multiple conditions to filter the results of each query. Filters are passed as an array of objects. Each object within the filters have three properties: 
@@ -82,10 +81,10 @@ filters: [
      { 
         name: "expertise",
         type: "contains", 
-        value: "gender"
+        value: "health"
      },
      { 
-        name: "surnam",
+        name: "surname",
         type: "contains", 
         value: "smith"
      }
@@ -104,8 +103,6 @@ The available matching types are:
 - "bt": between two values
 
 All filter types can also be made negative by prepending "n" to the available types. So, "ncontains" means "does not contain".
-
-
 
 ## Prior work & references ##
 
