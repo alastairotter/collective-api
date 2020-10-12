@@ -32,9 +32,6 @@ else {
     exit;
 }
 }
-// if(!isset($APIKEY)) { 
-    
-// }
 
 $url = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 $uriParts = parse_url($url);
