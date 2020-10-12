@@ -45,16 +45,18 @@ $table = str_replace("/", "", $qpath);
 
 if(property_exists($data, "limit")) { 
     $limit = $data->limit;
-    $res['info']['query_params']['limit'] = $limit;
+    // $res['info']['query_params']['limit'] = $limit;
 }
 // remove limit if nolimit set
 if(property_exists($data, "nolimit")) { 
     if($data->nolimit) { 
         unset($limit);
-        $res['info']['query_params']['nolimit'] = true;
+        $nolimit = true;
+        // $res['info']['query_params']['nolimit'] = true;
     }
     else { 
-        $res['info']['query_params']['nolimit'] = false;
+        $nolimit = false;
+        // $res['info']['query_params']['nolimit'] = false;
     }
     
 }
@@ -175,8 +177,6 @@ while($row = $query->fetch_assoc()) {
 }
 
 if(property_exists($data, "info")) { 
-
-    
     if($data->info) { 
         if(isset($APIKEY)) $res['info']['api_required'] = true;  
         else $res['info']['api_required'] = false;  
@@ -219,9 +219,17 @@ if(property_exists($data, "info")) {
     // show query 
     $res['info']['query'] = $sql;
 
+    // show query params
+    if(isset($limit)) { 
+        $res['info']['query_params']['limit'] = $limit;
+    }
+    if(isset($nolimit)) { 
+        $res['info']['query_params']['nolimit'] = $nolimit;
+    }
     }
 
 }
+
 
 $res = json_encode($res);
 echo $res;
