@@ -46,9 +46,7 @@ An example JSON query would look like:
 ```
 {
     apikey: "d1eCE6QsFn4yhZvm4GrdlWwsfzQqNqlJ",
-    schema: true, 
-    query: true,
-    tables: true,
+    info: true, 
     columns: ["id", "name", "pm", "expertise", "surname"],
     limit: [0,20],
     order: ["id", "ASC"],
